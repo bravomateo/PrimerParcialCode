@@ -1,0 +1,10 @@
+1,Calculo Diferencial,2555131,3,4,0,M08-10,J08-10,X
+2,Descubriendo la Fisica,2536101,4,4,3,L10-12,W10-12,V15-18
+3,Algebra y Trigonometria,2555101,3,4,0,M10-12,J10-12,X
+4,Geometrica vectorial,2555121,3,4,0,M14-16,J14-16,X
+5,Informatica I,2598511,4,4,3,L08-10,W08-10,V09-12
+6,Ingles I,2538101,1,4,0,L14-18,X,X
+7,Vivamos la Universidad,2537101,2,2,0,J14-16,X,X
+8,Electiva Socio,2537301,3,4,0,W14-16,J16-18,X
+
+

@@ -3,6 +3,85 @@
 using namespace std;
 
 
+void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClase);
+
+void leerArchivo(char (&horario)[7][24], const string& nombreArchivo);
+
+int main() {
+
+    // Crear un arreglo de 7 filas y 24 columnas
+    char horario[7][24];
+
+    // Asignar valores al arreglo
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 24; j++) {
+            horario[i][j] = '-';
+        }
+    }
+
+    leerArchivo(horario, "materias.txt");
+    
+    // Imprimir el horario
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 24; j++) {
+            cout << horario[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    ifstream archivo("materias.txt");
+    
+
+    // #numero,nombre,codigo,creditos,horasTeoricas,horasPracticas,HoraClase1, HoraClase2, HoraClase3
+    char* numeroLista    = new char[100];
+    char* nombre    = new char[100];
+    char* codigo    = new char[100];
+    char* creditos  = new char[100];
+    char* horasTeoricas  = new char[100];
+    char* horasPracticas = new char[100];
+    char* horaClase1    = new char[100];
+    char* horaClase2    = new char[100];
+    char* horaClase3    = new char[100];
+
+    while (
+    archivo.getline(numeroLista, 100, ',')  &&
+    archivo.getline(nombre, 100, ',')       &&
+    archivo.getline(codigo, 100, ',')       &&
+    archivo.getline(creditos, 100, ',')     &&
+    archivo.getline(horasTeoricas, 100, ',')    &&
+    archivo.getline(horasPracticas, 100, ',')   &&
+    archivo.getline(horaClase1, 100, ',')   &&
+    archivo.getline(horaClase2, 100, ',')   &&
+    archivo.getline(horaClase3, 100)
+    ) {
+    
+    cout << nombre << "\t -> \t" << creditos << endl;
+
+    int horasIndividuales = ((static_cast<int>(creditos[0])-48)*48)/16  -  ( (static_cast<int>(horasTeoricas[0])-48) + (static_cast<int>(horasPracticas[0])-48) );
+    cout << horasIndividuales << endl;
+
+    }
+
+    archivo.close();
+    // Liberar la memoria asignada dinámicamente
+    delete[] numeroLista;
+    delete[] nombre;
+    delete[] codigo;
+    delete[] creditos;
+    delete[] horasTeoricas;
+    delete[] horasPracticas;
+    delete[] horaClase1;
+    delete[] horaClase2;
+    delete[] horaClase3;
+
+    archivo.close();
+
+    
+    return 0;
+}
+
+
+
 void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClase) {
     // Obtener el día de la semana
     char diaSemana = horaClase[0];
@@ -27,34 +106,63 @@ void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClas
     }
 }
 
-int main() {
-    // Crear un arreglo de 7 filas y 24 columnas
-    char horario[7][24];
+void leerArchivo(char (&horario)[7][24], const string& nombreArchivo) {
+    ifstream archivo(nombreArchivo);
+    
 
-    // Asignar valores al arreglo
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 24; j++) {
-            horario[i][j] = 'D';
+    // #numero,nombre,codigo,creditos,horasTeoricas,horasPracticas,HoraClase1, HoraClase2, HoraClase3
+    char* numeroLista    = new char[100];
+    char* nombre    = new char[100];
+    char* codigo    = new char[100];
+    char* creditos  = new char[100];
+    char* horasTeoricas  = new char[100];
+    char* horasPracticas = new char[100];
+    char* horaClase1    = new char[100];
+    char* horaClase2    = new char[100];
+    char* horaClase3    = new char[100];
+
+    while (
+    archivo.getline(numeroLista, 100, ',')  &&
+    archivo.getline(nombre, 100, ',')       &&
+    archivo.getline(codigo, 100, ',')       &&
+    archivo.getline(creditos, 100, ',')     &&
+    archivo.getline(horasTeoricas, 100, ',')    &&
+    archivo.getline(horasPracticas, 100, ',')   &&
+    archivo.getline(horaClase1, 100, ',')   &&
+    archivo.getline(horaClase2, 100, ',')   &&
+    archivo.getline(horaClase3, 100)
+    ) {
+    
+    // Asignar los respectivos valores al arreglo
+
+        // Llenar Horario para la clase semanal 1
+        if (horaClase1[0] != 'X') {    
+            matricularHorario(horario, numeroLista, horaClase1);
         }
-    }
-    
-
-    char numeroLista1[] = "1";
-    char horaClase1[] = "L18-24";
-    matricularHorario(horario, numeroLista1, horaClase1);
-
-    char numeroLista2[] = "2";
-    char horaClase2[] = "M06-08";
-    matricularHorario(horario, numeroLista2, horaClase2);
-    
-    // Imprimir el horario
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 24; j++) {
-            cout << horario[i][j];
+        
+        // Llenar Horario para la clase semanal 2
+        if (horaClase2[0] != 'X') {    
+            matricularHorario(horario, numeroLista, horaClase2);
         }
-        cout << endl;
+        
+        // Llenar Horario para la clase semanal 2
+        if (horaClase3[0] != 'X') {    
+            matricularHorario(horario, numeroLista, horaClase3);
+        }
+
     }
-    
-    return 0;
+
+    archivo.close();
+    // Liberar la memoria asignada dinámicamente
+    delete[] numeroLista;
+    delete[] nombre;
+    delete[] codigo;
+    delete[] creditos;
+    delete[] horasTeoricas;
+    delete[] horasPracticas;
+    delete[] horaClase1;
+    delete[] horaClase2;
+    delete[] horaClase3;
+
+    archivo.close();
 }
-

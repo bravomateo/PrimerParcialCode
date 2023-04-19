@@ -2,11 +2,13 @@
 #include <fstream>
 using namespace std;
 
+// void arregloHorasEstudio 
 
 void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClase);
 
+void matricularMaterias(char (&horario)[7][24], const string& nombreArchivo);
+
 int main() {
-    ifstream archivo("materias.txt");
 
     // Crear un arreglo de 7 filas y 24 columnas
     char horario[7][24];
@@ -17,8 +19,48 @@ int main() {
             horario[i][j] = '-';
         }
     }
-    
 
+    matricularMaterias(horario, "materias.txt");
+    
+    // Imprimir el horario
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 24; j++) {
+            cout << horario[i][j] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
+
+
+
+void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClase) {
+    // Obtener el dia de la semana
+    char diaSemana = horaClase[0];
+    int fila = -1;
+    switch(diaSemana) {
+        case 'L': fila = 0; break;
+        case 'M': fila = 1; break;
+        case 'W': fila = 2; break;
+        case 'J': fila = 3; break;
+        case 'V': fila = 4; break;
+        case 'S': fila = 5; break;
+        case 'D': fila = 6; break;
+    }
+    
+    // Obtener la hora de inicio y fin de la clase
+    int horaInicio = (horaClase[1] - '0') * 10 + (horaClase[2] - '0');
+    int horaFin = (horaClase[4] - '0') * 10 + (horaClase[5] - '0');
+    
+    // Marcar en el horario las horas de la clase
+    for (int i = horaInicio; i < horaFin; i++) {
+        horario[fila][i] = numeroLista[0];
+    }
+}
+
+void matricularMaterias(char (&horario)[7][24], const string& nombreArchivo) {
+    ifstream archivo(nombreArchivo);
+    
     // #numero,nombre,codigo,creditos,horasTeoricas,horasPracticas,HoraClase1, HoraClase2, HoraClase3
     char* numeroLista    = new char[100];
     char* nombre    = new char[100];
@@ -41,8 +83,6 @@ int main() {
     archivo.getline(horaClase2, 100, ',')   &&
     archivo.getline(horaClase3, 100)
     ) {
-    
-    // Asignar los respectivos valores al arreglo
 
         // Llenar Horario para la clase semanal 1
         if (horaClase1[0] != 'X') {    
@@ -59,18 +99,6 @@ int main() {
             matricularHorario(horario, numeroLista, horaClase3);
         }
 
-
-        // Imprimir el horario
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 24; j++) {
-                cout << horario[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << horaClase1 << " " << horaClase2 << " " << horaClase3 << endl;
-    cout << endl;
-    
-
     }
 
     archivo.close();
@@ -85,31 +113,5 @@ int main() {
     delete[] horaClase2;
     delete[] horaClase3;
 
-    return 0;
-}
-
-
-
-void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClase) {
-    // Obtener el día de la semana
-    char diaSemana = horaClase[0];
-    int fila = -1;
-    switch(diaSemana) {
-        case 'L': fila = 0; break;
-        case 'M': fila = 1; break;
-        case 'W': fila = 2; break;
-        case 'J': fila = 3; break;
-        case 'V': fila = 4; break;
-        case 'S': fila = 5; break;
-        case 'D': fila = 6; break;
-    }
-    
-    // Obtener la hora de inicio y fin de la clase
-    int horaInicio = (horaClase[1] - '0') * 10 + (horaClase[2] - '0');
-    int horaFin = (horaClase[4] - '0') * 10 + (horaClase[5] - '0');
-    
-    // Marcar en el horario las horas de la clase
-    for (int i = horaInicio; i < horaFin; i++) {
-        horario[fila][i] = numeroLista[0];
-    }
+    archivo.close();
 }

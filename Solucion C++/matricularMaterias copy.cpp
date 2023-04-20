@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-
 using namespace std;
 
 bool sonIguales(char* str1, char* str2);
@@ -12,16 +11,6 @@ void horasIndividualesArreglo (int horasMatIndividuales[]);
 void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClase);
 
 void matricularMaterias(char (&horario)[7][24], const string& nombreArchivo);
-
-void asignarEstudio(char (&horario)[7][24]);
-
-void asignarAlmuerzo(char (&horario)[7][24], int horaAlmuerzo);
-
-void asignarCena(char (&horario)[7][24], int horaCena);
-
-void asignarDescanso (char (&horario)[7][24], int InicioDescanso, int FinDescanso);
-
-char **cargarNombresMaterias();
 
 int main() {
 
@@ -35,19 +24,8 @@ int main() {
         }
     }
 
-    matricularMaterias(horario, "materias.txt"); // se inscriben los horarios en el arreglo horario las materias matriculadas 
-
-    asignarDescanso(horario, 22,5);
-
-    asignarAlmuerzo(horario, 12);
-
-    asignarCena(horario, 19);
-
-    asignarEstudio(horario);
+    matricularMaterias(horario, "materias.txt");
     
-    
-    cout << endl;
-
     // Imprimir el horario
     for (int i = 0; i < 7; i++) {
         for (int j = 0; j < 24; j++) {
@@ -56,75 +34,39 @@ int main() {
         cout << endl;
     }
 
-    cout << endl;
-    cout << endl;
 
-    // sacar un arreglo para los nombres de las materias 
+    // imprimir arreglo de horas individuales
+    int numeroMaterias = contarMaterias();
+    int HorasIndividuales[numeroMaterias];
 
-    char** nombresMaterias = cargarNombresMaterias();
+    horasIndividualesArreglo(HorasIndividuales);
 
-    cout << nombresMaterias[4] << endl;
-
-    /*
-    // Liberar la memoria asignada dinámicamente
-    for (int j = 0; j < 8; j++) {
-        delete[] nombresMaterias[j];
+    for (int i = 0; i < numeroMaterias; i++){
+        cout << HorasIndividuales[i] << " ";
     }
-    delete[] nombresMaterias;
-    */
 
+    for(int dia = 0; dia < 7; dia++) {
+        for(int hora = 0; hora < 24; hora++) {
+            for(int i = 0; i < numeroMaterias; i++) {
+                    int horasMateria = HorasIndividuales[i];
+                    if(horasMateria > 0 && horario[dia][hora] == '-') { // Espacio libre en el horario
+                        horario[dia][hora] = 'a' + i ; // Asignar la materia
+                        HorasIndividuales[i]--; // Reducir las horas necesarias para la materia
+                        break;
+                    }
+            }
+        }
+    }
 
-
-    // imprimir el arreglo
+    cout << endl;
+    
+    // Imprimir el horario
     for (int i = 0; i < 7; i++) {
         for (int j = 0; j < 24; j++) {
             cout << horario[i][j] << " ";
         }
         cout << endl;
     }
-
-    cout << endl;
-
-    char horarioFormateado[24][7];
-
-    // Transponer la matriz
-    for (int fila = 0; fila < 7; fila++) {
-        for (int columna = 0; columna < 24; columna++) {
-            horarioFormateado[columna][fila] = horario[fila][columna];
-        }
-    }
-
-        // imprimir el arreglo
-    for (int i = 0; i < 24; i++) {
-        for (int j = 0; j < 7; j++) {
-            cout << horarioFormateado[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << endl;
-
-
-    cout << endl;
-
-    for (int fila = 0; fila < 24; fila++) {
-        for (int columna = 0; columna < 7; columna++) {
-
-            if (horarioFormateado[fila][columna] == '1') {
-                cout << nombresMaterias[0] << " ";
-            }
-            else if ( horarioFormateado[fila][columna] == 'Z') {
-                cout << "Hora descanso" << " ";
-            }
-            else {
-                cout << horarioFormateado[fila][columna] << " ";
-            }
-
-        }
-        cout << endl;
-    }
-
-
 
     return 0;
 }
@@ -156,8 +98,8 @@ void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClas
 }
 
 void matricularMaterias(char (&horario)[7][24], const string& nombreArchivo) {
-    
     ifstream archivo(nombreArchivo);
+    
 
     // #numero,nombre,codigo,creditos,horasTeoricas,horasPracticas,HoraClase1, HoraClase2, HoraClase3
     char* numeroLista    = new char[100];
@@ -317,108 +259,4 @@ bool sonIguales(char* str1, char* str2) {
         i++;
     }
     return (str1[i] == '\0' && str2[i] == '\0');
-}
-
-void asignarEstudio(char (&horario)[7][24]) {
-    
-    int numeroMaterias = contarMaterias();
-    int HorasIndividuales[numeroMaterias];
-
-    horasIndividualesArreglo(HorasIndividuales);
-
-    for(int dia = 0; dia < 7; dia++) {
-        for(int hora = 0; hora < 24; hora++) {
-            for(int i = 0; i < numeroMaterias; i++) {
-                    int horasMateria = HorasIndividuales[i];
-                    if(horasMateria > 0 && horario[dia][hora] == '-') { // Espacio libre en el horario
-                        horario[dia][hora] = 'a' + i ; // Asignar la materia
-                        HorasIndividuales[i]--; // Reducir las horas necesarias para la materia
-                        break;
-                    }
-            }
-        }
-    }
-
-}
-
-void asignarDescanso (char (&horario)[7][24], int InicioDescanso, int FinDescanso) {
-    int horaInicioSueno[7] = {InicioDescanso, InicioDescanso, InicioDescanso, InicioDescanso, InicioDescanso, InicioDescanso, InicioDescanso}; // Hora de inicio de sueño para cada día
-    int horaFinSueno[7] = {FinDescanso, FinDescanso, FinDescanso, FinDescanso, FinDescanso, FinDescanso, FinDescanso}; // Hora de fin de sueño para cada día
-
-    for(int dia = 0; dia < 7; dia++) {
-        for(int hora = 0; hora < 24; hora++) {
-            if(hora >= horaInicioSueno[dia] || hora < horaFinSueno[dia]) { // Hora de sueño
-                horario[dia][hora] = 'Z'; // Asignar hora de sueño
-            }
-        }
-    }
-}
-
-void asignarAlmuerzo(char (&horario)[7][24], int horaAlmuerzo) {
-    for(int dia = 0; dia < 7; dia++) {
-        horario[dia][horaAlmuerzo] = 'Y'; // Asignar hora de almuerzo
-    }
-}
-
-void asignarCena(char (&horario)[7][24], int horaCena) {
-    for(int dia = 0; dia < 7; dia++) {
-        horario[dia][horaCena] = 'V'; // Asignar hora de almuerzo
-    }
-}
-
-char **cargarNombresMaterias() {
-    ifstream archivo("materias.txt");
-
-    char** nombres = new char*[100]; // arreglo de 100 nombres (cadenas de caracteres)
-
-    int i = 0;
-    char* numeroLista    = new char[100];
-    char* nombre    = new char[100];
-    char* codigo    = new char[100];
-    char* creditos  = new char[100];
-    char* horasTeoricas  = new char[100];
-    char* horasPracticas = new char[100];
-    char* horaClase1    = new char[100];
-    char* horaClase2    = new char[100];
-    char* horaClase3    = new char[100];
-
-    while (
-        archivo.getline(numeroLista, 100, ',')  &&
-        archivo.getline(nombre, 100, ',')       &&
-        archivo.getline(codigo, 100, ',')       &&
-        archivo.getline(creditos, 100, ',')     &&
-        archivo.getline(horasTeoricas, 100, ',')    &&
-        archivo.getline(horasPracticas, 100, ',')   &&
-        archivo.getline(horaClase1, 100, ',')   &&
-        archivo.getline(horaClase2, 100, ',')   &&
-        archivo.getline(horaClase3, 100)
-    ) {
-        // Asignar los respectivos valores al arreglo
-
-        int n = 0;
-        while (nombre[n] != '\0') {
-            n++;
-        }
-
-        nombres[i] = new char[n + 1]; // reservar memoria para la cadena de caracteres del nombre
-        for (int j = 0; j < n; j++) {
-            nombres[i][j] = nombre[j]; // copiar el valor de la variable nombre en el elemento i del arreglo de nombres
-        }
-        nombres[i][n] = '\0'; // agregar el caracter nulo al final de la cadena
-
-        i++; // incrementar el contador de nombres
-    }
-
-    archivo.close();
-    delete[] numeroLista;
-    delete[] nombre;
-    delete[] codigo;
-    delete[] creditos;
-    delete[] horasTeoricas;
-    delete[] horasPracticas;
-    delete[] horaClase1;
-    delete[] horaClase2;
-    delete[] horaClase3;
-
-    return nombres;
 }

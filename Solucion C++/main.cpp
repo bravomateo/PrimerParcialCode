@@ -88,7 +88,7 @@ void ingresarMaterias () {
     cout << "La cantidad de materias son: " << numeroMaterias << endl; 
 
     // Crear un objeto ofstream y abrir el archivo fuera del bucle for
-    ofstream archivo("cursos.txt");
+    ofstream archivo("materias.txt");
 
     int numeroMate = 1;
 

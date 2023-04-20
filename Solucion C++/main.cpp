@@ -3,6 +3,10 @@
 
 using namespace std;
 
+const int NUM_CAMPOS = 8;
+
+void ingresarMaterias ();
+
 bool sonIguales(char* str1, char* str2);
 
 int contarMaterias();
@@ -23,67 +27,121 @@ void asignarDescanso (char (&horario)[7][24], int InicioDescanso, int FinDescans
 
 char *cargarNombresMaterias(int numLinea);
 
+void imprimirHorarioOrganizado (char (&horarioFormateado)[24][7]);
+
 int main() {
 
-    // Crear un arreglo de 7 filas y 24 columnas
-    char horario[7][24];
+    int eleccion;
+    cout << "1. Cargar sus materias \n2. Visualizar Horario Recomendado de estudio" << endl;
+    cout << "Opcion: ";
+    cin >> eleccion;
 
-    // Asignar valores al arreglo
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 24; j++) {
-            horario[i][j] = '-';
-        }
+    if (eleccion == 1) {
+        ingresarMaterias();
     }
 
-    matricularMaterias(horario, "materias.txt"); // se inscriben los horarios en el arreglo horario las materias matriculadas 
+    else if (eleccion == 2) {
+        // Crear un arreglo de 7 filas y 24 columnas
+        char horario[7][24];
 
-    asignarDescanso(horario, 22,5);
-
-    asignarAlmuerzo(horario, 12);
-
-    asignarCena(horario, 19);
-
-    asignarEstudio(horario);
-    
-    
-    char horarioFormateado[24][7];
-    // Transponer la matriz
-    for (int fila = 0; fila < 7; fila++) {
-        for (int columna = 0; columna < 24; columna++) {
-            horarioFormateado[columna][fila] = horario[fila][columna];
-        }
-    }
-
-    // imprimir Horario
-    
-    cout << endl;
-    cout << "-----------------------------------------" << endl;
-
-    for (int i = 0; i < 24; i++) {
-        for (int j = 0; j < 7; j++) {
-            int materiaImprimir = static_cast<int>(horarioFormateado[i][j]) - 48;
-            if (materiaImprimir == -3) {
-                cout << "Disp" << "\t\t";
-            }
-            else {
-                cout << materiaImprimir  << "\t\t";
+        // Asignar valores al arreglo
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 24; j++) {
+                horario[i][j] = '-';
             }
         }
-        cout << endl;
+
+        matricularMaterias(horario, "materias.txt"); // se inscriben los horarios en el arreglo horario las materias matriculadas 
+
+        asignarDescanso(horario, 22,5);
+
+        asignarAlmuerzo(horario, 12);
+
+        asignarCena(horario, 19);
+
+        asignarEstudio(horario);
+        
+        char horarioFormateado[24][7];
+        // Transponer la matriz
+        for (int fila = 0; fila < 7; fila++) {
+            for (int columna = 0; columna < 24; columna++) {
+                horarioFormateado[columna][fila] = horario[fila][columna];
+            }
+        }
+
+        imprimirHorarioOrganizado(horarioFormateado);
     }
 
-    cout << "-----------------------------------------------" << endl;
 
-    int numLinea = 4; // Número de línea de la materia que deseas obtener
-    char* nombreMateria = cargarNombresMaterias(numLinea);
-    cout << "Nombre de la materia en la linea " << numLinea << ": " << nombreMateria << endl;
-    delete[] nombreMateria; // Liberar la memoria asignada
- 
-
+    else {
+        cout << "Opcion no valida " << endl;
+    }
     return 0;
 }
 
 
+void ingresarMaterias () {
+       int numeroMaterias;
+    cout << "Ingrese el numero de materias matriculadas: ";
+    cin >> numeroMaterias;
+
+    cout << "La cantidad de materias son: " << numeroMaterias << endl; 
+
+    // Crear un objeto ofstream y abrir el archivo fuera del bucle for
+    ofstream archivo("cursos.txt");
+
+    int numeroMate = 1;
+
+    for (int i = 0; i < numeroMaterias ; i++) {
+
+        char valores[NUM_CAMPOS][20];
+
+        // Pedir la información del curso al usuario
+
+        cout << "Ingrese Nombre del curso: ";
+        cin >> valores[0]; 
+
+        cout << "Ingrese Codigo del curso: ";
+        cin >> valores[1]; 
+
+        cout << "Ingrese Creditos del curso: ";
+        cin >> valores[2];
+
+        cout << "Ingrese Horas Teoricas del curso: ";
+        cin >> valores[3];
+
+        cout << "Ingrese Horas Practicas del curso: ";
+        cin >> valores[4]; 
+
+        cout << "Ingrese Horario 1 del curso: ";
+        cin >> valores[5]; 
+
+        cout << "Ingrese Horario 2 del curso: ";
+        cin >> valores[6]; 
+
+        cout << "Ingrese Horario 3 del curso: ";
+        cin >> valores[7]; 
+
+        // Escribir la información del curso en el archivo
+        archivo << numeroMate << ',';
+        for(int j = 0; j < NUM_CAMPOS; j++) {
+            if (j == NUM_CAMPOS - 1) {        
+                archivo << valores[j] << endl;
+            }
+            else {
+                archivo << valores[j] << ',';
+            }
+        }
+
+        // Incrementar el número de curso
+        numeroMate++;
+        cout << endl;
+    }
+        
+    // Cerrar el archivo
+    archivo.close();
+
+}
 
 void matricularHorario(char (&horario)[7][24], char* numeroLista, char* horaClase) {
     // Obtener el día de la semana
@@ -320,16 +378,16 @@ void asignarCena(char (&horario)[7][24], int horaCena) {
     }
 }
 
-char *cargarNombresMaterias (int numLinea) {
+char *cargarNombresMaterias(int numLinea) {
     ifstream archivo("materias.txt");
 
-    char *nombreMateria = new char[100];
+    char *nombreMateria = new char[7]; // solo se reservan seis caracteres y un espacio para el carácter nulo
     int linea = 0;
 
     char* numeroLista    = new char[100];
     char* nombre    = new char[100];
     char* codigo    = new char[100];
-    char* creditos  = new char[100];
+    char* creditos      = new char[100];
     char* horasTeoricas  = new char[100];
     char* horasPracticas = new char[100];
     char* horaClase1    = new char[100];
@@ -347,21 +405,15 @@ char *cargarNombresMaterias (int numLinea) {
         archivo.getline(horaClase2, 100, ',')   &&
         archivo.getline(horaClase3, 100)
     ) {
-        // Asignar los respectivos valores al arreglo
         linea++;
 
         if (linea == numLinea) {
-            int n = 0;
-            while (nombre[n] != '\0') {
-            n++;
-        }
-
-        for (int j = 0; j < n; j++) {
-            nombreMateria[j] = nombre[j];
-        }
-        nombreMateria[n] = '\0';
-
-        break;
+            int i;
+            for (i = 0; i < 6 && nombre[i] != '\0'; i++) {
+                nombreMateria[i] = nombre[i];
+            }
+            nombreMateria[i] = '\0'; // agregar el carácter nulo al final
+            break;
         }
     }
 
@@ -377,4 +429,44 @@ char *cargarNombresMaterias (int numLinea) {
     delete[] horaClase3;
 
     return nombreMateria;
+}
+
+void imprimirHorarioOrganizado (char (&horarioFormateado)[24][7]) {
+
+    // imprimir Horario
+    cout << " // --------------------------------------------------------------------------------------------------------- //" << endl;
+    cout << "LUN\t\tMAR\t\tMIE\t\tJUE\t\tVIE\t\tSAB\t\tDOM" << endl;
+    
+    for (int i = 0; i < 24; i++) {
+        for (int j = 0; j < 7; j++) {
+            int materiaImprimir = static_cast<int>(horarioFormateado[i][j]) - 48;
+            if (materiaImprimir == -3) {
+                cout << "*DISPO" << "\t\t";
+            }
+            else if (materiaImprimir == 42) {
+                cout << "DESCAN" << "\t\t";
+            }
+
+            else if (materiaImprimir < 9) {
+                char* nombreMateria = cargarNombresMaterias(materiaImprimir);
+                cout << nombreMateria << "\t\t";
+            }
+
+            else if (materiaImprimir == 41) {
+                cout << "ALMUER" << "\t\t";
+            }
+
+            else if (materiaImprimir == 38) {
+                cout << "CENA" << "\t\t";
+            }
+
+            else {
+                char* nombreMateria = cargarNombresMaterias(materiaImprimir-48);
+                cout << "." << nombreMateria << "\t\t";
+            }
+        }
+        cout << endl;
+    }
+    cout << " // --------------------------------------------------------------------------------------------------------- //" << endl;
+
 }

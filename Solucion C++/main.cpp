@@ -21,7 +21,7 @@ void asignarCena(char (&horario)[7][24], int horaCena);
 
 void asignarDescanso (char (&horario)[7][24], int InicioDescanso, int FinDescanso);
 
-char **cargarNombresMaterias();
+char *cargarNombresMaterias(int numLinea);
 
 int main() {
 
@@ -46,47 +46,7 @@ int main() {
     asignarEstudio(horario);
     
     
-    cout << endl;
-
-    // Imprimir el horario
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 24; j++) {
-            cout << horario[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << endl;
-    cout << endl;
-
-    // sacar un arreglo para los nombres de las materias 
-
-    char** nombresMaterias = cargarNombresMaterias();
-
-    cout << nombresMaterias[4] << endl;
-
-    /*
-    // Liberar la memoria asignada dinámicamente
-    for (int j = 0; j < 8; j++) {
-        delete[] nombresMaterias[j];
-    }
-    delete[] nombresMaterias;
-    */
-
-
-
-    // imprimir el arreglo
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 24; j++) {
-            cout << horario[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << endl;
-
     char horarioFormateado[24][7];
-
     // Transponer la matriz
     for (int fila = 0; fila < 7; fila++) {
         for (int columna = 0; columna < 24; columna++) {
@@ -94,37 +54,31 @@ int main() {
         }
     }
 
-        // imprimir el arreglo
+    // imprimir Horario
+    
+    cout << endl;
+    cout << "-----------------------------------------" << endl;
+
     for (int i = 0; i < 24; i++) {
         for (int j = 0; j < 7; j++) {
-            cout << horarioFormateado[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << endl;
-
-
-    cout << endl;
-
-    for (int fila = 0; fila < 24; fila++) {
-        for (int columna = 0; columna < 7; columna++) {
-
-            if (horarioFormateado[fila][columna] == '1') {
-                cout << nombresMaterias[0] << " ";
-            }
-            else if ( horarioFormateado[fila][columna] == 'Z') {
-                cout << "Hora descanso" << " ";
+            int materiaImprimir = static_cast<int>(horarioFormateado[i][j]) - 48;
+            if (materiaImprimir == -3) {
+                cout << "Disp" << "\t\t";
             }
             else {
-                cout << horarioFormateado[fila][columna] << " ";
+                cout << materiaImprimir  << "\t\t";
             }
-
         }
         cout << endl;
     }
 
+    cout << "-----------------------------------------------" << endl;
 
+    int numLinea = 4; // Número de línea de la materia que deseas obtener
+    char* nombreMateria = cargarNombresMaterias(numLinea);
+    cout << "Nombre de la materia en la linea " << numLinea << ": " << nombreMateria << endl;
+    delete[] nombreMateria; // Liberar la memoria asignada
+ 
 
     return 0;
 }
@@ -366,12 +320,12 @@ void asignarCena(char (&horario)[7][24], int horaCena) {
     }
 }
 
-char **cargarNombresMaterias() {
+char *cargarNombresMaterias (int numLinea) {
     ifstream archivo("materias.txt");
 
-    char** nombres = new char*[100]; // arreglo de 100 nombres (cadenas de caracteres)
+    char *nombreMateria = new char[100];
+    int linea = 0;
 
-    int i = 0;
     char* numeroLista    = new char[100];
     char* nombre    = new char[100];
     char* codigo    = new char[100];
@@ -394,19 +348,21 @@ char **cargarNombresMaterias() {
         archivo.getline(horaClase3, 100)
     ) {
         // Asignar los respectivos valores al arreglo
+        linea++;
 
-        int n = 0;
-        while (nombre[n] != '\0') {
+        if (linea == numLinea) {
+            int n = 0;
+            while (nombre[n] != '\0') {
             n++;
         }
 
-        nombres[i] = new char[n + 1]; // reservar memoria para la cadena de caracteres del nombre
         for (int j = 0; j < n; j++) {
-            nombres[i][j] = nombre[j]; // copiar el valor de la variable nombre en el elemento i del arreglo de nombres
+            nombreMateria[j] = nombre[j];
         }
-        nombres[i][n] = '\0'; // agregar el caracter nulo al final de la cadena
+        nombreMateria[n] = '\0';
 
-        i++; // incrementar el contador de nombres
+        break;
+        }
     }
 
     archivo.close();
@@ -420,5 +376,5 @@ char **cargarNombresMaterias() {
     delete[] horaClase2;
     delete[] horaClase3;
 
-    return nombres;
+    return nombreMateria;
 }
